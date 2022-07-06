@@ -1,17 +1,19 @@
 import React from "react";
+import { useParams, useLocation } from "react-router-dom";
 import { request, gql } from "graphql-request";
 import { useState, useEffect } from "react";
-import EmployesDetailes from "./EmployesDetailes";
-import { Link, useLocation } from "react-router-dom";
-import "./style.css";
 
-const Employee = () => {
+const EmployesDetailes = () => {
   const [data, setData] = useState("");
+
+  const result = useLocation();
+  const path = result.pathname.split("/")[2];
+  console.log(path);
 
   // useEffect(() => {
   //   const query = gql`
   //     {
-  //       designs {
+  //       designs(where: {slug: "${path}"}) {
   //         picture {
   //           url
   //           width
@@ -22,7 +24,7 @@ const Employee = () => {
   //         slug
   //         id
   //       }
-  //       servicings {
+  //       servicings(where: {slug: "${path}"}) {
   //         picture {
   //           url
   //           width
@@ -50,6 +52,7 @@ const Employee = () => {
   //         name
   //         description
   //       }
+
   //     }
   //   `;
 
@@ -62,21 +65,13 @@ const Employee = () => {
   useEffect(() => {
     const query = gql`
       {
-        positions {
-          position
-          slug
-          employee {
-            name
-            description
-            slug
-            picture {
-              url
-              width
-              height
-            }
-            bio {
-              json
-            }
+       employees(where:{ slug: "${path}"}) {
+          name
+          description
+          picture {
+            url
+            width
+            height
           }
         }
       }
@@ -85,40 +80,15 @@ const Employee = () => {
     request(
       "https://api-ap-south-1.graphcms.com/v2/cl4mbehal7kfh01z60e44gu48/master",
       query
-    ).then((data) => {setData(data);console.log(data)});
+    ).then((data) => setData(data));
   }, []);
-
-
-
-
   return (
     <>
-      {data &&
-        data.positions.map((curritem, id) => {
-          return (
-            <>
-              <h1 className="head" key={id}>
-                {curritem.position}
-              </h1>
-              <div className="doubleline"></div>
-              {curritem.employee.map((initem, index) => {
-                return (
-                  <>
-                    <div className="profile">
-                      <img src={initem.picture.url} width="200px" alt="" />
-                      <h1 key={index}>{initem.name}</h1>
-                      <Link to={`/employe/${initem.slug}`}>
-                        <h1>{initem.description}</h1>
-                      </Link>
-                    </div>
-                  </>
-                );
-              })}
-            </>
-          );
-        })}
+      <img src={data && data.employees[0].picture.url} width="300px" alt="" />
+      <h1>{data && data.employees[0].name}</h1>
+      <h1>{data && data.employees[0].description}</h1>
     </>
   );
 };
 
-export default Employee;
+export default EmployesDetailes;

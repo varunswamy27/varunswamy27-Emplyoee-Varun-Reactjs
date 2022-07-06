@@ -34,6 +34,7 @@ const GraphCms = () => {
     <div>graphCms</div>
 
     {/* <p>{name && name.dogs[0].name +" "+ name.dogs[0].age}</p> */}
+    
 
 
 
